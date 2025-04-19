@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3311231016 林鈺翔</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+        .success-icon {
+            text-align: center;
+            font-size: 72px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .server-info {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .links {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .links a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .links a:hover {
+            background: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>3311231016 林鈺翔</h1>
+        <p> 期中考 DEMO</p>
+        
+        <div class="server-info">
+            <h2>伺服器資訊</h2>
+            <p><strong>伺服器地址：</strong> <span id="server-ip">Loading...</span></p>
+            <p><strong>作業系統：</strong> Ubuntu</p>
+            <p><strong>Web 伺服器：</strong> Apache</p>
+            <p><strong>資料庫：</strong> MariaDB</p>
+            <p><strong>版本：</strong> 1.0</p>
+            <p><strong>部署時間：</strong> <span id="deploy-time">Loading...</span></p>
+        </div>
+        
+        <div class="links">
+            <a href="/admin.php">管理頁面</a>
+            <a href="/phpmyadmin">phpMyAdmin</a>
+            <a href="/db-test.php">資料庫測試</a>
+        </div>
+        
+        <p style="margin-top: 30px; text-align: center;">您可以開始將您的網站內容放在 <code>/var/www/html</code> 目錄中來替換這個頁面。</p>
+    </div>
+
+    <script>
+        // 獲取當前伺服器 IP 地址
+        document.getElementById('server-ip').innerText = window.location.hostname;
+        
+        // 設置部署時間
+        document.getElementById('deploy-time').innerText = new Date().toLocaleString();
+    </script>
+</body>
+</html> 
