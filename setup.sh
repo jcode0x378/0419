@@ -110,9 +110,9 @@ ${YELLOW}您可以通過以下方式訪問網站:${NC}
 - phpMyAdmin: http://$SERVER_IP/phpmyadmin
 
 ${YELLOW}數據庫信息:${NC}
-- 數據庫名稱: webapp_db
-- 用戶名: webapp_user
-- 密碼: webapp_pass
+- 數據庫名稱: webappdb
+- 用戶名: webuser
+- 密碼: userpassword
 - 特殊權限: 可以創建新的資料庫、匯入匯出資料庫和資料表
 
 ${YELLOW}FTP 連線資訊:${NC}

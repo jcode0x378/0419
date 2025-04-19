@@ -7,16 +7,16 @@
 一行指令安裝全部環境：
 
 ```bash
-sudo apt update && sudo apt install -y git && git clone https://github.com/yourusername/ubuntu-apache-setup.git && cd ubuntu-apache-setup && chmod +x setup.sh scripts/*.sh && sudo ./setup.sh
+sudo apt update && sudo apt install -y git && git clone https://github.com/jcode0x378/0419.git && cd 0419 && chmod +x setup.sh scripts/*.sh && sudo ./setup.sh
 ```
 
 ## 安裝後訪問
 
 成功安裝後，您可以通過以下方式訪問：
 
-- **主頁**: http://[伺服器IP]/
-- **管理介面**: http://[伺服器IP]/admin.php
-- **phpMyAdmin**: http://[伺服器IP]/phpmyadmin
+- **主頁**: http://[伺服器 IP]/
+- **管理介面**: http://[伺服器 IP]/admin.php
+- **phpMyAdmin**: http://[伺服器 IP]/phpmyadmin
 
 ## 管理員登入
 
@@ -52,19 +52,3 @@ sudo tail -f /var/log/mysql/error.log
 ```bash
 sudo ./scripts/fix_apache.sh
 ```
-
-## 系統要求
-
-- Ubuntu 伺服器 (推薦 20.04 LTS 或更高版本)
-- 至少 1GB RAM
-- 至少 10GB 硬碟空間
-- 網路連接
-
-## 安全建議
-
-在生產環境中：
-
-1. 立即更改所有預設密碼
-2. 啟用 HTTPS
-3. 調整檔案權限
-4. 定期更新系統 
