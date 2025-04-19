@@ -113,6 +113,7 @@ ${YELLOW}數據庫信息:${NC}
 - 數據庫名稱: webapp_db
 - 用戶名: webapp_user
 - 密碼: webapp_pass
+- 特殊權限: 可以創建新的資料庫
 
 ${YELLOW}FTP 連線資訊:${NC}
 - FTP 伺服器: $SERVER_IP
@@ -131,6 +132,7 @@ ${YELLOW}學生用戶資訊 (3311231016):${NC}
   * 數據庫名稱: student_db
   * 用戶名: 3311231016
   * 密碼: userpassword
+  * 特殊權限: 可以創建新的資料庫
 - 學生測試頁面: http://$SERVER_IP/3311231016/db-test.php
 
 ${RED}⚠️ 重要安全提示:${NC}

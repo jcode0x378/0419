@@ -83,9 +83,12 @@ CREATE DATABASE IF NOT EXISTS $MYSQL_APP_DB CHARACTER SET utf8mb4 COLLATE utf8mb
 -- 創建用戶
 CREATE USER IF NOT EXISTS '$MYSQL_APP_USER'@'localhost' IDENTIFIED BY '$MYSQL_APP_PASSWORD';
 CREATE USER IF NOT EXISTS '$MYSQL_APP_USER'@'%' IDENTIFIED BY '$MYSQL_APP_PASSWORD';
--- 授予權限
+-- 授予資料庫權限
 GRANT ALL PRIVILEGES ON $MYSQL_APP_DB.* TO '$MYSQL_APP_USER'@'localhost';
 GRANT ALL PRIVILEGES ON $MYSQL_APP_DB.* TO '$MYSQL_APP_USER'@'%';
+-- 授予創建資料庫的權限
+GRANT CREATE ON *.* TO '$MYSQL_APP_USER'@'localhost';
+GRANT CREATE ON *.* TO '$MYSQL_APP_USER'@'%';
 -- 重新載入權限表
 FLUSH PRIVILEGES;
 EOF
@@ -98,9 +101,12 @@ CREATE DATABASE IF NOT EXISTS $STUDENT_DB_NAME CHARACTER SET utf8mb4 COLLATE utf
 -- 創建用戶
 CREATE USER IF NOT EXISTS '$STUDENT_DB_USER'@'localhost' IDENTIFIED BY '$STUDENT_DB_PASSWORD';
 CREATE USER IF NOT EXISTS '$STUDENT_DB_USER'@'%' IDENTIFIED BY '$STUDENT_DB_PASSWORD';
--- 授予權限
+-- 授予資料庫權限
 GRANT ALL PRIVILEGES ON $STUDENT_DB_NAME.* TO '$STUDENT_DB_USER'@'localhost';
 GRANT ALL PRIVILEGES ON $STUDENT_DB_NAME.* TO '$STUDENT_DB_USER'@'%';
+-- 授予創建資料庫的權限
+GRANT CREATE ON *.* TO '$STUDENT_DB_USER'@'localhost';
+GRANT CREATE ON *.* TO '$STUDENT_DB_USER'@'%';
 -- 重新載入權限表
 FLUSH PRIVILEGES;
 EOF
@@ -614,12 +620,14 @@ echo "數據庫名稱：$MYSQL_APP_DB"
 echo "應用程序用戶：$MYSQL_APP_USER"
 echo "應用程序密碼：$MYSQL_APP_PASSWORD"
 echo "root 密碼：$MYSQL_ROOT_PASSWORD"
+echo "（應用程序用戶已被授予創建新資料庫的權限）"
 echo ""
 echo "學生用戶資料庫配置信息："
 echo "學生用戶名稱：$STUDENT_DB_USER"
 echo "學生數據庫名稱：$STUDENT_DB_NAME"
 echo "學生數據庫密碼：$STUDENT_DB_PASSWORD"
 echo "學生測試頁面：http://YOUR_SERVER_IP/3311231016/db-test.php"
+echo "（學生用戶已被授予創建新資料庫的權限）"
 echo ""
 echo "⚠️ 請記下此資訊，並在生產環境中更改這些預設密碼 ⚠️"
 exit 0 
