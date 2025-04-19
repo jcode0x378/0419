@@ -10,6 +10,11 @@ MYSQL_APP_USER="webuser"
 MYSQL_APP_PASSWORD="userpassword"
 MYSQL_APP_DB="webappdb"
 
+# 設置學生用戶的資料庫資訊
+STUDENT_DB_USER="3311231016"
+STUDENT_DB_PASSWORD="userpassword"
+STUDENT_DB_NAME="student_db"
+
 # 更新系統套件列表
 echo "更新系統套件列表..."
 apt update
@@ -81,6 +86,21 @@ CREATE USER IF NOT EXISTS '$MYSQL_APP_USER'@'%' IDENTIFIED BY '$MYSQL_APP_PASSWO
 -- 授予權限
 GRANT ALL PRIVILEGES ON $MYSQL_APP_DB.* TO '$MYSQL_APP_USER'@'localhost';
 GRANT ALL PRIVILEGES ON $MYSQL_APP_DB.* TO '$MYSQL_APP_USER'@'%';
+-- 重新載入權限表
+FLUSH PRIVILEGES;
+EOF
+
+# 創建學生用戶的資料庫和用戶
+echo "創建學生用戶資料庫和用戶..."
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" <<EOF
+-- 創建資料庫
+CREATE DATABASE IF NOT EXISTS $STUDENT_DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- 創建用戶
+CREATE USER IF NOT EXISTS '$STUDENT_DB_USER'@'localhost' IDENTIFIED BY '$STUDENT_DB_PASSWORD';
+CREATE USER IF NOT EXISTS '$STUDENT_DB_USER'@'%' IDENTIFIED BY '$STUDENT_DB_PASSWORD';
+-- 授予權限
+GRANT ALL PRIVILEGES ON $STUDENT_DB_NAME.* TO '$STUDENT_DB_USER'@'localhost';
+GRANT ALL PRIVILEGES ON $STUDENT_DB_NAME.* TO '$STUDENT_DB_USER'@'%';
 -- 重新載入權限表
 FLUSH PRIVILEGES;
 EOF
@@ -186,9 +206,45 @@ if (\$conn->connect_error) {
 ?>
 EOF
 
+# 為學生用戶建立資料庫設定檔
+echo "為學生用戶建立資料庫設定檔..."
+mkdir -p /var/www/html/3311231016
+cat > /var/www/html/3311231016/db-config.php << EOF
+<?php
+/**
+ * 學生用戶 3311231016 的資料庫連接設定
+ */
+
+// 資料庫主機
+define('DB_HOST', 'localhost');
+
+// 資料庫用戶名
+define('DB_USER', '$STUDENT_DB_USER');
+
+// 資料庫密碼
+define('DB_PASSWORD', '$STUDENT_DB_PASSWORD');
+
+// 資料庫名稱
+define('DB_NAME', '$STUDENT_DB_NAME');
+
+// 建立連接
+\$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
+// 檢查連接
+if (\$conn->connect_error) {
+    die("連接失敗: " . \$conn->connect_error);
+}
+
+// 設置字符編碼
+\$conn->set_charset("utf8mb4");
+?>
+EOF
+
 # 設定適當的檔案權限
 chown www-data:www-data /var/www/html/db-config.php
 chmod 640 /var/www/html/db-config.php
+chown 3311231016:3311231016 /var/www/html/3311231016/db-config.php
+chmod 640 /var/www/html/3311231016/db-config.php
 
 # 創建一個簡單的 PHP 測試頁面
 echo "創建 PHP 資訊頁面..."
@@ -199,6 +255,119 @@ phpinfo();
 EOF
 chown www-data:www-data /var/www/html/phpinfo.php
 chmod 644 /var/www/html/phpinfo.php
+
+# 為學生用戶創建一個簡單的資料庫測試頁面
+echo "為學生用戶創建資料庫測試頁面..."
+cat > /var/www/html/3311231016/db-test.php << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>學生用戶資料庫連接測試</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #e1f5fe;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>學生用戶 3311231016 資料庫連接測試</h1>
+        
+        <?php
+        require_once 'db-config.php';
+        
+        echo '<div class="result success">';
+        echo '<strong>連接成功！</strong> 成功連接到資料庫 ' . DB_NAME;
+        echo '</div>';
+        
+        // 顯示 MySQL/MariaDB 版本
+        \$version_result = \$conn->query("SELECT VERSION() as version");
+        if (\$version_result) {
+            \$version_row = \$version_result->fetch_assoc();
+            echo '<div class="result info">';
+            echo '<strong>資料庫版本：</strong> ' . \$version_row['version'];
+            echo '</div>';
+        }
+        
+        // 顯示資料庫表清單
+        \$tables_result = \$conn->query("SHOW TABLES");
+        echo '<div class="result info">';
+        echo '<strong>資料庫表：</strong><br>';
+        if (\$tables_result->num_rows > 0) {
+            echo '<ul>';
+            while (\$table = \$tables_result->fetch_array()) {
+                echo '<li>' . \$table[0] . '</li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '目前沒有資料表，資料庫是空的。';
+        }
+        echo '</div>';
+        
+        // 關閉連接
+        \$conn->close();
+        ?>
+        
+        <h2>學生用戶資料庫信息</h2>
+        <div class="result info">
+            <strong>資料庫管理：</strong><br>
+            您可以使用 <a href="/phpmyadmin/" target="_blank">phpMyAdmin</a> 來管理您的資料庫。<br>
+            用戶名: $STUDENT_DB_USER<br>
+            密碼: $STUDENT_DB_PASSWORD<br>
+            資料庫名稱: $STUDENT_DB_NAME
+        </div>
+    </div>
+</body>
+</html>
+EOF
+
+chown 3311231016:3311231016 /var/www/html/3311231016/db-test.php
+chmod 644 /var/www/html/3311231016/db-test.php
 
 # 創建一個簡單的測試頁面
 echo "創建資料庫測試頁面..."
@@ -386,6 +555,24 @@ INSERT INTO comments (post_id, user_id, comment) VALUES
 (2, 1, '這篇文章很有用！');
 EOF
 
+# 為學生用戶建立範例資料表
+echo "為學生用戶建立範例資料表..."
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" $STUDENT_DB_NAME <<EOF
+-- 建立用戶資料表
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 插入示範資料
+INSERT INTO users (username, password, email) VALUES
+('$STUDENT_DB_USER', '$STUDENT_DB_PASSWORD', '$STUDENT_DB_USER@example.com');
+EOF
+
 # 最後的一些檢查
 echo "執行最終檢查..."
 
@@ -421,11 +608,18 @@ echo "==== 資料庫環境安裝完成 ===="
 echo "您可以通過以下網址訪問 phpMyAdmin：http://YOUR_SERVER_IP/phpmyadmin/"
 echo "資料庫連接測試頁面：http://YOUR_SERVER_IP/db-test.php"
 echo "PHP 資訊頁面：http://YOUR_SERVER_IP/phpinfo.php"
+echo ""
 echo "資料庫配置信息："
 echo "數據庫名稱：$MYSQL_APP_DB"
 echo "應用程序用戶：$MYSQL_APP_USER"
 echo "應用程序密碼：$MYSQL_APP_PASSWORD"
 echo "root 密碼：$MYSQL_ROOT_PASSWORD"
+echo ""
+echo "學生用戶資料庫配置信息："
+echo "學生用戶名稱：$STUDENT_DB_USER"
+echo "學生數據庫名稱：$STUDENT_DB_NAME"
+echo "學生數據庫密碼：$STUDENT_DB_PASSWORD"
+echo "學生測試頁面：http://YOUR_SERVER_IP/3311231016/db-test.php"
 echo ""
 echo "⚠️ 請記下此資訊，並在生產環境中更改這些預設密碼 ⚠️"
 exit 0 

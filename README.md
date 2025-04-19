@@ -32,8 +32,8 @@ sudo apt install -y git curl wget
 2. 克隆此專案到您的 Ubuntu 系統：
 
 ```bash
-git clone https://github.com/yourusername/ubuntu-apache-setup.git
-cd ubuntu-apache-setup
+git clone https://github.com/jcode0x378/0419.git
+cd 0419
 ```
 
 3. 設置腳本執行權限：
@@ -61,14 +61,14 @@ sudo apt install -y wget unzip
 2. 下載專案壓縮檔：
 
 ```bash
-wget https://github.com/yourusername/ubuntu-apache-setup/archive/main.zip -O ubuntu-apache-setup.zip
+wget https://github.com/jcode0x378/0419/archive/main.zip -O 0419.zip
 ```
 
 3. 解壓縮並進入目錄：
 
 ```bash
-unzip ubuntu-apache-setup.zip
-cd ubuntu-apache-setup-main
+unzip 0419.zip
+cd 0419-main
 ```
 
 4. 設置腳本執行權限：
@@ -89,7 +89,7 @@ sudo ./setup.sh
 如果您想要快速安裝，可以使用以下單行指令（適用於全新安裝的 Ubuntu）：
 
 ```bash
-sudo apt update && sudo apt install -y git && git clone https://github.com/yourusername/ubuntu-apache-setup.git && cd ubuntu-apache-setup && chmod +x setup.sh scripts/*.sh && sudo ./setup.sh
+sudo apt update && sudo apt install -y git && git clone https://github.com/jcode0x378/0419.git && cd 0419 && chmod +x setup.sh scripts/*.sh && sudo ./setup.sh
 ```
 
 ## 腳本結構

@@ -80,8 +80,25 @@ if ! id "$FTP_USER" &>/dev/null; then
     echo "$FTP_USER:$FTP_PASS" | chpasswd
 fi
 
+# 創建 3311231016 FTP 用戶
+echo "創建 3311231016 FTP 用戶..."
+STUDENT_USER="3311231016"
+STUDENT_PASS="ftppassword"
+
+# 檢查用戶是否已存在
+if ! id "$STUDENT_USER" &>/dev/null; then
+    useradd -m -s /bin/bash $STUDENT_USER
+    echo "$STUDENT_USER:$STUDENT_PASS" | chpasswd
+    
+    # 創建用戶網頁目錄
+    mkdir -p /var/www/html/$STUDENT_USER
+    chown -R $STUDENT_USER:$STUDENT_USER /var/www/html/$STUDENT_USER
+    chmod -R 755 /var/www/html/$STUDENT_USER
+fi
+
 # 添加用戶到允許列表
 echo "$FTP_USER" > /etc/vsftpd.userlist
+echo "$STUDENT_USER" >> /etc/vsftpd.userlist
 
 # 設置目錄權限
 echo "設置目錄權限..."
@@ -119,6 +136,8 @@ echo "============================================================"
 echo "FTP 伺服器地址：$(hostname -I | awk '{print $1}')"
 echo "FTP 用戶名：$FTP_USER"
 echo "FTP 密碼：$FTP_PASS"
+echo "學生 FTP 用戶名：$STUDENT_USER"
+echo "學生 FTP 密碼：$STUDENT_PASS"
 echo "FTP 端口：21（命令端口）, 40000-50000（數據端口）"
 echo "請使用支持 FTPS 的客戶端連接（如 FileZilla）"
 echo "============================================================"
