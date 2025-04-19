@@ -579,6 +579,225 @@ INSERT INTO users (username, password, email) VALUES
 ('$STUDENT_DB_USER', '$STUDENT_DB_PASSWORD', '$STUDENT_DB_USER@example.com');
 EOF
 
+# 為學生用戶創建一個功能完整的 index.php 頁面
+echo "為學生用戶創建 index.php 頁面..."
+cat > /var/www/html/3311231016/index.php << 'EOF'
+<?php
+// 資料庫連接設定
+$db_host = 'localhost';  // 資料庫主機
+$db_user = '3311231016'; // 學生用戶名
+$db_pass = 'userpassword'; // 學生用戶密碼
+$db_name = 'student_db';  // 學生資料庫名稱
+
+// 建立連接
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+
+// 檢查連接
+if ($conn->connect_error) {
+    die("連接失敗: " . $conn->connect_error);
+}
+
+// 設置字符編碼
+$conn->set_charset("utf8mb4");
+
+// 查詢用戶表
+$sql = "SELECT * FROM users";
+$result = $conn->query($sql);
+
+// 處理資料庫錯誤
+$error_message = '';
+if (!$result) {
+    $error_message = "查詢錯誤: " . $conn->error;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3311231016 的資料庫頁面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .info-box {
+            background-color: #e1f5fe;
+            border: 1px solid #b3e5fc;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .error {
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+            color: #c62828;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>3311231016 的資料庫頁面</h1>
+        
+        <div class="info-box">
+            <h2>資料庫連接資訊</h2>
+            <p><strong>主機:</strong> <?php echo $db_host; ?></p>
+            <p><strong>使用者:</strong> <?php echo $db_user; ?></p>
+            <p><strong>資料庫:</strong> <?php echo $db_name; ?></p>
+            <p><strong>連接狀態:</strong> <?php echo $conn->connect_error ? "失敗" : "成功"; ?></p>
+        </div>
+        
+        <?php if ($error_message): ?>
+            <div class="error">
+                <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
+        
+        <h2>用戶資料</h2>
+        
+        <?php if ($result && $result->num_rows > 0): ?>
+            <table>
+                <thead>
+                    <tr>
+                        <?php
+                        // 獲取欄位名稱
+                        $fields = $result->fetch_fields();
+                        foreach ($fields as $field) {
+                            echo "<th>" . htmlspecialchars($field->name) . "</th>";
+                        }
+                        ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <?php foreach ($row as $value): ?>
+                                <td><?php echo htmlspecialchars($value); ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p>資料表中沒有找到數據。</p>
+        <?php endif; ?>
+        
+        <h2>自訂查詢</h2>
+        <form method="post" action="">
+            <textarea name="custom_query" style="width: 100%; height: 100px;"><?php echo isset($_POST['custom_query']) ? htmlspecialchars($_POST['custom_query']) : "SELECT * FROM users"; ?></textarea>
+            <br>
+            <button type="submit" style="padding: 8px 16px; margin-top: 10px;">執行查詢</button>
+        </form>
+        
+        <?php
+        // 處理自訂查詢
+        if (isset($_POST['custom_query'])) {
+            $custom_query = $_POST['custom_query'];
+            $custom_result = $conn->query($custom_query);
+            
+            if (!$custom_result) {
+                echo '<div class="error">查詢錯誤: ' . $conn->error . '</div>';
+            } elseif ($custom_result->num_rows > 0) {
+                echo '<h3>查詢結果:</h3>';
+                echo '<table><thead><tr>';
+                
+                // 獲取欄位名稱
+                $fields = $custom_result->fetch_fields();
+                foreach ($fields as $field) {
+                    echo "<th>" . htmlspecialchars($field->name) . "</th>";
+                }
+                
+                echo '</tr></thead><tbody>';
+                
+                while ($row = $custom_result->fetch_assoc()) {
+                    echo '<tr>';
+                    foreach ($row as $value) {
+                        echo '<td>' . htmlspecialchars($value) . '</td>';
+                    }
+                    echo '</tr>';
+                }
+                
+                echo '</tbody></table>';
+            } else {
+                echo '<p>查詢未返回任何結果，或返回了沒有數據的結果集。</p>';
+            }
+        }
+        ?>
+
+        <h2>可用資料表</h2>
+        <?php
+        $tables_result = $conn->query("SHOW TABLES");
+        if ($tables_result && $tables_result->num_rows > 0) {
+            echo '<ul>';
+            while ($table_row = $tables_result->fetch_array()) {
+                echo '<li>' . htmlspecialchars($table_row[0]) . '</li>';
+            }
+            echo '</ul>';
+        } else {
+            echo '<p>沒有找到任何資料表。</p>';
+        }
+        ?>
+        
+        <h2>建立新資料表範例</h2>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace;">
+            CREATE TABLE products (<br>
+            &nbsp;&nbsp;id INT AUTO_INCREMENT PRIMARY KEY,<br>
+            &nbsp;&nbsp;name VARCHAR(100) NOT NULL,<br>
+            &nbsp;&nbsp;price DECIMAL(10,2) NOT NULL,<br>
+            &nbsp;&nbsp;description TEXT,<br>
+            &nbsp;&nbsp;created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP<br>
+            );
+        </div>
+    </div>
+    
+    <?php
+    // 關閉資料庫連接
+    $conn->close();
+    ?>
+</body>
+</html>
+EOF
+
+# 設定適當的檔案權限
+chown 3311231016:3311231016 /var/www/html/3311231016/index.php
+chmod 644 /var/www/html/3311231016/index.php
+
 # 最後的一些檢查
 echo "執行最終檢查..."
 
